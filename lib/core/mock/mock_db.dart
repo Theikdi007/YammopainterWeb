@@ -3,6 +3,7 @@ import '../../models/community_post.dart';
 import '../../models/feedback_entry.dart';
 import '../../models/portal_user.dart';
 import '../../models/reward.dart';
+import '../../models/story_line.dart';
 import '../../models/svg_asset.dart';
 
 /// In-memory data store used when Supabase credentials are not configured.
@@ -17,6 +18,45 @@ class MockDb {
   String nextId() => 'mock-${_seq++}';
 
   DateTime _daysAgo(int d) => DateTime.now().subtract(Duration(days: d));
+
+  late final List<StoryLine> storyLines = [
+    StoryLine(
+      id: 'str-1',
+      title: 'Learn to Draw a Dinosaur',
+      description: 'Step-by-step guide to drawing a friendly dinosaur.',
+      category: 'Drawing',
+      targetApp: 'AR Drawing',
+      imagePath: 'demo/story_dino.svg',
+      imageUrl: '',
+      isActive: true,
+      date: _daysAgo(1),
+      createdAt: _daysAgo(1),
+    ),
+    StoryLine(
+      id: 'str-2',
+      title: 'Sunset Painting Challenge',
+      description: 'Create a beautiful sunset painting with simple steps.',
+      category: 'Painting',
+      targetApp: 'Painting',
+      imagePath: 'demo/story_sunset.svg',
+      imageUrl: '',
+      isActive: true,
+      date: _daysAgo(3),
+      createdAt: _daysAgo(3),
+    ),
+    StoryLine(
+      id: 'str-3',
+      title: 'Ocean Puzzle Adventure',
+      description: 'Solve ocean-themed puzzles and earn rewards.',
+      category: 'Puzzle',
+      targetApp: 'Puzzle',
+      imagePath: 'demo/story_ocean.svg',
+      imageUrl: '',
+      isActive: false,
+      date: _daysAgo(7),
+      createdAt: _daysAgo(7),
+    ),
+  ];
 
   late final List<SvgAsset> svgAssets = [
     SvgAsset(

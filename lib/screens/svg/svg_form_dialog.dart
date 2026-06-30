@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/story_line_controller.dart';
 import '../../controllers/svg_controller.dart';
 import '../../core/utils/image_formats.dart';
 import '../../core/utils/ui_helpers.dart';
@@ -12,8 +13,6 @@ import '../../theme/app_colors.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/svg_thumbnail.dart';
 
-/// Create or edit an SVG asset. When [existing] is null the user must pick a
-/// file; when editing, only metadata changes.
 class SvgFormDialog extends StatefulWidget {
   const SvgFormDialog({super.key, this.existing});
 
@@ -32,9 +31,11 @@ class _SvgFormDialogState extends State<SvgFormDialog> {
 
   Uint8List? _bytes;
   String? _fileName;
+  String? _storyLineId;
   bool _saving = false;
 
   final SvgController _controller = Get.find<SvgController>();
+  final StoryLineController _storyLineController = Get.find<StoryLineController>();
 
   bool get _isEditing => widget.existing != null;
 
@@ -46,6 +47,7 @@ class _SvgFormDialogState extends State<SvgFormDialog> {
     _description.text = e?.description ?? '';
     _category = e?.category ?? SvgAsset.categories.first;
     _targetApp = e?.targetApp ?? SvgAsset.apps.first;
+    _storyLineId = e?.storyLineId;
   }
 
   @override
@@ -88,9 +90,8 @@ class _SvgFormDialogState extends State<SvgFormDialog> {
           description: _description.text.trim(),
           category: _category,
           targetApp: _targetApp,
+          storyLineId: _storyLineId,
         ),
-        // Only sent when the user picked a new file; otherwise the existing
-        // image is kept.
         bytes: _bytes,
         fileName: _fileName,
       );
@@ -102,11 +103,12 @@ class _SvgFormDialogState extends State<SvgFormDialog> {
         targetApp: _targetApp,
         bytes: _bytes!,
         fileName: _fileName!,
+        storyLineId: _storyLineId,
       );
     }
     if (mounted) setState(() => _saving = false);
     if (ok) {
-      Get.back<void>(); // close the form first
+      Get.back<void>();
       await showSuccessDialog(
         _isEditing
             ? 'Image updated successfully.'
@@ -142,6 +144,8 @@ class _SvgFormDialogState extends State<SvgFormDialog> {
                   controller: _description,
                   maxLines: 3,
                 ),
+                const SizedBox(height: 14),
+                _storiesDropdown(context),
                 const SizedBox(height: 14),
                 _dropdown(
                   label: 'Category',
@@ -215,6 +219,34 @@ class _SvgFormDialogState extends State<SvgFormDialog> {
         ),
       ],
     );
+  }
+
+  Widget _storiesDropdown(BuildContext context) {
+    return Obx(() {
+      final stories = _storyLineController.items.where((s) => s.isActive).toList();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Story',
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            initialValue: stories.any((s) => s.id == _storyLineId) ? _storyLineId : null,
+            isExpanded: true,
+            hint: const Text('None'),
+            items: [
+              const DropdownMenuItem(value: null, child: Text('None')),
+              ...stories.map((s) => DropdownMenuItem(
+                  value: s.id, child: Text(s.title, overflow: TextOverflow.ellipsis))),
+            ],
+            onChanged: (v) => setState(() => _storyLineId = v),
+          ),
+        ],
+      );
+    });
   }
 
   Widget _dropdown({

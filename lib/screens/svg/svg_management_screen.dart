@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/story_line_controller.dart';
 import '../../controllers/svg_controller.dart';
 import '../../core/utils/ui_helpers.dart';
 import '../../models/svg_asset.dart';
@@ -19,6 +20,7 @@ class SvgManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SvgController>();
+    final storyController = Get.find<StoryLineController>();
     return ContentPage(
       title: 'Image Assets',
       subtitle: 'Manage drawings, paintings and puzzles',
@@ -55,14 +57,14 @@ class SvgManagementScreen extends StatelessWidget {
                     DataColumn(label: Text('Preview')),
                     DataColumn(label: Text('Name')),
                     DataColumn(label: Text('Category')),
-                    DataColumn(label: Text('App')),
+                    DataColumn(label: Text('Story')),
                     DataColumn(label: Text('Status')),
                     DataColumn(label: Text('Created')),
                     DataColumn(label: Text('Actions')),
                   ],
                   source: GenericDataSource<SvgAsset>(
                     controller.items,
-                    (a) => _cells(context, controller, a),
+                    (a) => _cells(context, controller, storyController, a),
                   ),
                 ),
               );
@@ -73,8 +75,14 @@ class SvgManagementScreen extends StatelessWidget {
     );
   }
 
-  List<DataCell> _cells(
-      BuildContext context, SvgController controller, SvgAsset a) {
+  List<DataCell> _cells(BuildContext context, SvgController controller,
+      StoryLineController storyController, SvgAsset a) {
+    final storyTitle = a.storyLineId != null
+        ? storyController.items
+            .where((s) => s.id == a.storyLineId)
+            .map((s) => s.title)
+            .firstOrNull
+        : null;
     return [
       DataCell(
         InkWell(
@@ -89,7 +97,7 @@ class SvgManagementScreen extends StatelessWidget {
         ),
       ),
       DataCell(StatusChip.category(a.category)),
-      DataCell(Text(a.targetApp)),
+      DataCell(Text(storyTitle ?? '-')),
       DataCell(StatusChip.active(a.isActive)),
       DataCell(Text(formatDate(a.createdAt))),
       DataCell(Row(

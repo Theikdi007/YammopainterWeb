@@ -5,6 +5,7 @@ import '../screens/feedback/feedback_screen.dart';
 import '../screens/notifications/notification_screen.dart';
 import '../screens/posts/post_management_screen.dart';
 import '../screens/rewards/reward_screen.dart';
+import '../screens/story_lines/story_line_management_screen.dart';
 import '../screens/svg/svg_management_screen.dart';
 import '../screens/users/user_management_screen.dart';
 
@@ -23,6 +24,8 @@ const List<NavItem> navItems = [
       DashboardScreen()),
   NavItem('Image Assets', Icons.image_outlined, Icons.image,
       SvgManagementScreen()),
+  NavItem('Stories', Icons.auto_stories_outlined, Icons.auto_stories,
+      StoryLineManagementScreen()),
   NavItem('Users', Icons.people_outline, Icons.people,
       UserManagementScreen()),
   NavItem('Notifications', Icons.notifications_outlined, Icons.notifications,

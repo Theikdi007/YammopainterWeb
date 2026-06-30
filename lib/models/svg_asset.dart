@@ -8,6 +8,7 @@ class SvgAsset {
   final String filePath; // path inside the storage bucket
   final String publicUrl;
   final bool isActive;
+  final String? storyLineId;
   final DateTime createdAt;
 
   const SvgAsset({
@@ -19,6 +20,7 @@ class SvgAsset {
     required this.filePath,
     required this.publicUrl,
     required this.isActive,
+    this.storyLineId,
     required this.createdAt,
   });
 
@@ -35,6 +37,7 @@ class SvgAsset {
       filePath: map['file_path'] as String? ?? '',
       publicUrl: map['public_url'] as String? ?? '',
       isActive: map['is_active'] as bool? ?? true,
+      storyLineId: map['story_line_id']?.toString(),
       createdAt:
           DateTime.tryParse(map['created_at']?.toString() ?? '') ??
               DateTime.now(),
@@ -49,6 +52,7 @@ class SvgAsset {
         'file_path': filePath,
         'public_url': publicUrl,
         'is_active': isActive,
+        if (storyLineId != null) 'story_line_id': storyLineId,
       };
 
   SvgAsset copyWith({
@@ -59,6 +63,7 @@ class SvgAsset {
     String? filePath,
     String? publicUrl,
     bool? isActive,
+    String? storyLineId,
   }) {
     return SvgAsset(
       id: id,
@@ -69,6 +74,7 @@ class SvgAsset {
       filePath: filePath ?? this.filePath,
       publicUrl: publicUrl ?? this.publicUrl,
       isActive: isActive ?? this.isActive,
+      storyLineId: storyLineId ?? this.storyLineId,
       createdAt: createdAt,
     );
   }

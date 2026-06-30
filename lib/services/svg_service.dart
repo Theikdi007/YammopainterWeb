@@ -36,11 +36,19 @@ class SvgService {
 
   /// Realtime stream of all assets (newest first). Filtering is applied
   /// client-side by the controller. Only valid when Supabase is configured.
+  ///
+  /// supabase_flutter can emit a `null` entry in the row list after a DELETE
+  /// event (its internal cache stores a null placeholder). Filter those out
+  /// before parsing so the stream never throws a Null-to-Map cast error and
+  /// the controller stays clean.
   Stream<List<SvgAsset>> stream() {
     return SupabaseConfig.client
         .from('svg_assets')
         .stream(primaryKey: ['id']).map((rows) {
-      final list = rows.map((e) => SvgAsset.fromMap(e)).toList();
+      final list = rows
+          .whereType<Map<String, dynamic>>()
+          .map((e) => SvgAsset.fromMap(e))
+          .toList();
       list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return list;
     });
@@ -53,6 +61,7 @@ class SvgService {
     required String targetApp,
     required Uint8List bytes,
     required String fileName,
+    String? storyLineId,
   }) async {
     if (SupabaseConfig.isDemoMode) {
       final asset = SvgAsset(
@@ -64,6 +73,7 @@ class SvgService {
         filePath: 'demo/$fileName',
         publicUrl: '',
         isActive: true,
+        storyLineId: storyLineId,
         createdAt: DateTime.now(),
       );
       MockDb.instance.svgAssets.insert(0, asset);
@@ -93,6 +103,7 @@ class SvgService {
           'file_path': path,
           'public_url': url,
           'is_active': true,
+          if (storyLineId != null) 'story_line_id': storyLineId,
         })
         .select()
         .single();
@@ -127,6 +138,7 @@ class SvgService {
       'category': asset.category,
       'target_app': asset.targetApp,
       'is_active': asset.isActive,
+      'story_line_id': asset.storyLineId,
     };
 
     if (bytes != null && fileName != null) {

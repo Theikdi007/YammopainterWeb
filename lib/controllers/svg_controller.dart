@@ -104,6 +104,7 @@ class SvgController extends GetxController {
     required String targetApp,
     required Uint8List bytes,
     required String fileName,
+    String? storyLineId,
   }) async {
     try {
       await _service.create(
@@ -113,6 +114,7 @@ class SvgController extends GetxController {
         targetApp: targetApp,
         bytes: bytes,
         fileName: fileName,
+        storyLineId: storyLineId,
       );
       await _refresh();
       return true;

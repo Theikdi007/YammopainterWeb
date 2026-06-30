@@ -28,6 +28,23 @@ create table if not exists public.svg_assets (
   file_path   text not null,
   public_url  text not null default '',
   is_active   boolean not null default true,
+  story_line_id uuid references public.story_lines(id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
+-- Story lines (narrative/guide content for Drawing / Painting / Puzzle)
+-- ---------------------------------------------------------------------------
+create table if not exists public.story_lines (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null,
+  description text not null default '',
+  category    text not null check (category in ('Drawing', 'Painting', 'Puzzle')),
+  target_app  text not null,
+  image_path  text not null,
+  image_url   text not null default '',
+  is_active   boolean not null default true,
+  date        date,
   created_at  timestamptz not null default now()
 );
 
@@ -99,6 +116,7 @@ on conflict (id) do nothing;
 -- ---------------------------------------------------------------------------
 alter table public.portal_users  enable row level security;
 alter table public.svg_assets    enable row level security;
+alter table public.story_lines   enable row level security;
 alter table public.notifications enable row level security;
 alter table public.rewards       enable row level security;
 alter table public.user_rewards  enable row level security;
@@ -109,7 +127,7 @@ declare
   t text;
 begin
   foreach t in array array[
-    'portal_users', 'svg_assets', 'notifications',
+    'portal_users', 'svg_assets', 'story_lines', 'notifications',
     'rewards', 'user_rewards', 'posts'
   ]
   loop
@@ -144,7 +162,7 @@ declare
   t text;
 begin
   foreach t in array array[
-    'portal_users', 'svg_assets', 'notifications',
+    'portal_users', 'svg_assets', 'story_lines', 'notifications',
     'rewards', 'user_rewards', 'posts'
   ]
   loop

@@ -6,6 +6,7 @@ import '../../controllers/nav_controller.dart';
 import '../../controllers/notification_controller.dart';
 import '../../controllers/post_controller.dart';
 import '../../controllers/reward_controller.dart';
+import '../../controllers/story_line_controller.dart';
 import '../../controllers/svg_controller.dart';
 import '../../controllers/user_controller.dart';
 
@@ -16,6 +17,7 @@ class HomeBinding extends Bindings {
     Get.lazyPut(() => NavController(), fenix: true);
     Get.lazyPut(() => DashboardController(), fenix: true);
     Get.lazyPut(() => SvgController(), fenix: true);
+    Get.lazyPut(() => StoryLineController(), fenix: true);
     Get.lazyPut(() => UserController(), fenix: true);
     Get.lazyPut(() => NotificationController(), fenix: true);
     Get.lazyPut(() => RewardController(), fenix: true);
